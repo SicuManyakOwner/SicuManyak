@@ -3,6 +3,7 @@
 
 import Tkinter
 def sikumim_page():
+    pass
 
 def main():
     window = Tkinter.Tk()

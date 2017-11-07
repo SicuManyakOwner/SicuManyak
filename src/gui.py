@@ -4,14 +4,17 @@
 import Tkinter
 
 
-def sikumim_page():
-    pass
+def sikumim_page(window):
+    widgets = window.pack_slaves()
+    for widget in widgets:
+        widget.destroy()
+    window.mainloop()
 
 
 def main():
     window = Tkinter.Tk()
     sikumim = u"סיכומים"
-    Tkinter.Button(window, text=sikumim[::-1], command = sikumim_page()).pack()
+    sikumim_button = Tkinter.Button(window, text=sikumim[::-1], command=lambda: sikumim_page(window)).pack()
     window.mainloop()
 
 

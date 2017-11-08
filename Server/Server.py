@@ -7,7 +7,7 @@ RATING_POS = 0
 LIKELIHOOD_POS = 1
 OWNS_POS = 2
 AWAITING_POS = 3
-LOCAL_IP = '127.0.0.1'
+LOCAL_IP = '10.0.0.30'
 USER_PATH = "C:\\SicuManyak\\Users\\"
 ROOT_PATH = "C:\\SicuManyak\\"
 
@@ -25,7 +25,7 @@ def initialize():
     while server_port.isdigit() is not True:
         server_port = raw_input("Enter the port to run the server on\n")
 
-    server_socket.bind(('0.0.0.0', int(server_port)))  # Bind the server socket to this computer
+    server_socket.bind((LOCAL_IP, int(server_port)))  # Bind the server socket to this computer
 
     inputs.append(server_socket)
 

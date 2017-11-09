@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from Tkinter import *
@@ -30,7 +29,6 @@ def login_page():
     Button(WINDOW, text=u"שלח נתונים"[::-1], command=lambda: contact_server.create_socket(0)).grid(row=2, column=2)
     Button(WINDOW, text=u"חזרה למסך הראשי"[::-1],
            command=lambda: clean_page("main")).grid(row=2, column=1)
-
 
 
 def sikumim_page():

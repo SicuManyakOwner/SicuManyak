@@ -4,9 +4,10 @@ import socket
 import select
 from Classes import Answer, User
 
-LOCAL_IP = '10.0.0.30'
+LOCAL_IP = '0.0.0.0'
 USER_PATH = "C:\\SicuManyak\\Users\\"
 ROOT_PATH = "C:\\SicuManyak\\"
+PORT = 7777
 
 
 answers_queue = []
@@ -18,12 +19,8 @@ outputs = []  # Sockets we want to write to
 def initialize():
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Setup a server socket
-
-    server_port = raw_input("Enter the port to run the server on\n")  # Ask the admin for port
-    while server_port.isdigit() is not True:
-        server_port = raw_input("Enter the port to run the server on\n")
-
-    server_socket.bind((LOCAL_IP, int(server_port)))  # Bind the server socket to this computer
+    server_socket.bind((LOCAL_IP, PORT))  # Bind the server socket to this computer
+    server_socket.listen(5)
 
     inputs.append(server_socket)
 
@@ -51,7 +48,7 @@ def handle_messages(writable_sockets):
     for cur_socket in writable_sockets:
         for answer in answers_queue:
             if cur_socket == answer.get_dest_sock():
-                cur_socket.send(answer.get_answer_type() + answer.get_data_length() + answer.get_data())
+                cur_socket.send(str(answer.get_answer_type()) + str(answer.get_data_length()) + str(answer.get_data()))
                 answers_queue.remove(answer)
                 outputs.remove(cur_socket)
                 break
@@ -68,7 +65,7 @@ def handle_inputs(readable_sockets, server_socket):
     for cur_socket in readable_sockets:
 
         if cur_socket is server_socket:
-            new_socket, new_ip = server_socket.accept(1)
+            new_socket, new_ip = server_socket.accept()
 
             answers_queue.append(Answer(new_socket, Answer.HND_TYPE, 9, "handshake"))
             if new_socket not in outputs:

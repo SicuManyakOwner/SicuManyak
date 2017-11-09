@@ -31,7 +31,6 @@ def login_page():
            command=lambda: clean_page("main")).grid(row=2, column=1)
 
 
-
 def sikumim_page():
     """Opens the sikumim page"""
     WINDOW.title(u"סיכומים")

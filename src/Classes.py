@@ -39,10 +39,16 @@ class Answer:
     SCM_TYPE = 'S'
     LOG_TYPE = 'L'
     ERR_TYPE = 'E'
+    ACC_TYPE = 'A'
 
     LOG_LEN = 2
     HND_LEN = 1
     ERR_LEN = 2
+    URL_LEN = 3
+    TRM_LEN = 0
+    PAY_LEN = 1
+    SCM_LEN = 3
+    ACC_LEN = 3
 
 
 class User:

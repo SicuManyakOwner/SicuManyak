@@ -73,7 +73,7 @@ class User:
                             ",".join(self.___awating_confirm))
 
     def by_file(self):
-        with open(USER_PATH + self.___user_name, 'r') as user_file:
+        with open(USER_PATH + self.___user_name + ".manyak", 'r') as user_file:
             user_info = user_file.read().split('-')
             self.___rating = int(user_info[RATING_POS])
             self.___likelihood = int(user_info[LIKELIHOOD_POS])
@@ -81,4 +81,4 @@ class User:
             self.___awating_confirm = user_info[AWAITING_POS].split(',')
 
     def exists(self):
-        return os.path.isfile(USER_PATH + self.___user_name)
+        return os.path.isfile(USER_PATH + self.___user_name + ".manyak")

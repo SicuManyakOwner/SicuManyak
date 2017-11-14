@@ -41,6 +41,7 @@ class Answer:
     ERR_TYPE = 'E'
     ACC_TYPE = 'A'
 
+    WRT_LEN = 2
     LOG_LEN = 2
     HND_LEN = 1
     ERR_LEN = 2

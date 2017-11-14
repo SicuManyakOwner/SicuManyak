@@ -110,6 +110,9 @@ def create_answer(client_socket, rtype):
     elif rtype == Answer.LOG_TYPE:
         send_login_msg(client_socket, data_len)
 
+    elif rtype == Answer.ACC_TYPE:
+        send_login_msg(client_socket, data_len)
+
     elif rtype == Answer.HND_TYPE:
         data_len = int(data_len)
         data = client_socket.recv(data_len)
@@ -130,6 +133,7 @@ def send_login_msg(dest_sock, data_len):
     if usr.exists():
         usr.by_file()
         msg = "Welcome back " + username
+        log("User logged in : " + username)
     else:
         usr.new_user()
         log("User created : " + username)
@@ -162,5 +166,5 @@ def log(msg):
 
 
 if __name__ == '__main__':
-    #print "Remove the hashtag"
+    # print "Remove the hashtag"
     initialize()

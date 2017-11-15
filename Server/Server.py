@@ -2,6 +2,7 @@ import sys
 import os
 import socket
 import select
+import time
 from Classes import Answer, User
 
 LOCAL_IP = '0.0.0.0'
@@ -67,18 +68,19 @@ def handle_inputs(readable_sockets, server_socket):
         if cur_socket is server_socket:
             new_socket, new_ip = server_socket.accept()
 
+            inputs.append(new_socket)
             answers_queue.append(Answer(new_socket, Answer.HND_TYPE, 9, "handshake"))
             if new_socket not in outputs:
                 outputs.append(new_socket)
 
         else:
-            rtype = cur_socket.read(1)
+            rtype = cur_socket.recv(1)
 
             if rtype is not None:
                 create_answer(cur_socket, rtype)
 
-                if new_socket not in outputs:
-                    outputs.append(new_socket)
+                if cur_socket not in outputs:
+                    outputs.append(cur_socket)
 
             else:
                 inputs.remove(cur_socket)
@@ -87,44 +89,58 @@ def handle_inputs(readable_sockets, server_socket):
                 cur_socket.close()
 
 
-def create_answer(client_socket, type):
+def create_answer(client_socket, rtype):
     """
     This function's purpose is to read the data sent by the user, handle it, and then return an answer accordingly
     :param client_socket: a socket to read the data from and sent the data
-    :param type: the type of the request
+    :param rtype: the type of the request
     :return:
     """
 
-    if type == Answer.LOG_TYPE:
-        data_len = client_socket.read(Answer.LOG_LEN)
-    elif type == Answer.HND_TYPE:
-        data_len = client_socket.read(Answer.HND_TYPE)
+    if rtype == Answer.LOG_TYPE:
+        data_len = client_socket.recv(Answer.LOG_LEN)
+    elif rtype == Answer.HND_TYPE:
+        data_len = client_socket.recv(Answer.HND_LEN)
+    elif rtype == Answer.ACC_TYPE:
+        data_len = client_socket.recv(Answer.ACC_LEN)
 
     if data_len.isdigit() is not True:
-        send_error("ERR DATA LEN ISNT DIGIT")
+        send_error("ERR DATA LEN ISNT DIGIT", client_socket)
 
-    elif type == Answer.LOG_TYPE:
-        username = client_socket.read(data_len)
-        usr = User(username)
-        if usr.exists():
-            usr.by_file()
-            log("User created : " + username + "\n")
-            send_login_msg("Welcome aboard " + username, client_socket)
-        else:
-            usr.new_user()
-            send_login_msg("Welcome back " + username, client_socket)
+    elif rtype == Answer.LOG_TYPE:
+        send_login_msg(client_socket, data_len)
 
-    elif type == Answer.HND_TYPE:
-        data = client_socket.read(data_len)
+    elif rtype == Answer.ACC_TYPE:
+        send_login_msg(client_socket, data_len)
+
+    elif rtype == Answer.HND_TYPE:
+        data_len = int(data_len)
+        data = client_socket.recv(data_len)
         if data != "handshake":
             send_error("Hand shake error", client_socket)
+        else:
+            log("Handshook someone")
 
     else:
         send_error("Unknown request", client_socket)
 
 
-def send_login_msg(msg, dest_sock):
-    answers_queue.append(Answer(dest_sock, Answer.ERR_TYPE, len(msg), msg))
+def send_login_msg(dest_sock, data_len):
+    data_len = int(data_len)
+    username = dest_sock.recv(data_len)
+
+    usr = User(username)
+    if usr.exists():
+        usr.by_file()
+        msg = "Welcome back " + username
+        log("User logged in : " + username)
+    else:
+        usr.new_user()
+        log("User created : " + username)
+        msg = "Welcome aboard " + username
+
+    answers_queue.append(Answer(dest_sock, Answer.LOG_TYPE, len(msg), msg))
+
     if dest_sock not in outputs:
         outputs.append(dest_sock)
     inputs.remove(dest_sock)
@@ -143,11 +159,12 @@ def log(msg):
     :param msg: A log message
     :return:
     """
+    msg = time.asctime(time.gmtime()) + "\t" + msg + "\n"
     print msg
     with open(ROOT_PATH + "log.log", 'a') as log_file:
         log_file.write(msg)
 
 
 if __name__ == '__main__':
-    #print "Remove the hashtag"
+    # print "Remove the hashtag"
     initialize()

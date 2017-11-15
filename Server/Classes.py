@@ -39,10 +39,16 @@ class Answer:
     SCM_TYPE = 'S'
     LOG_TYPE = 'L'
     ERR_TYPE = 'E'
+    ACC_TYPE = 'A'
 
     LOG_LEN = 2
     HND_LEN = 1
     ERR_LEN = 2
+    URL_LEN = 3
+    TRM_LEN = 0
+    PAY_LEN = 1
+    SCM_LEN = 3
+    ACC_LEN = 3
 
 
 class User:
@@ -62,12 +68,12 @@ class User:
         self.___rating = 0
         self.___likelihood = 100
 
-        with open( + self.___user_name + ".manyak", 'w') as user_file:
+        with open(USER_PATH + self.___user_name + ".manyak", 'w') as user_file:
             user_file.write(str(self.___rating) + '-' + str(self.___likelihood) + '-' + ",".join(self.___owns) + '-' +
                             ",".join(self.___awating_confirm))
 
     def by_file(self):
-        with open(USER_PATH + self.___user_name, 'r') as user_file:
+        with open(USER_PATH + self.___user_name + ".manyak", 'r') as user_file:
             user_info = user_file.read().split('-')
             self.___rating = int(user_info[RATING_POS])
             self.___likelihood = int(user_info[LIKELIHOOD_POS])
@@ -75,4 +81,4 @@ class User:
             self.___awating_confirm = user_info[AWAITING_POS].split(',')
 
     def exists(self):
-        return os.path.isfile(USER_PATH + self.___user_name)
+        return os.path.isfile(USER_PATH + self.___user_name + ".manyak")

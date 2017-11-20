@@ -51,6 +51,7 @@ def handle_messages(writable_sockets):
             if cur_socket == answer.get_dest_sock():
                 cur_socket.send(str(answer.get_answer_type()) + str(answer.get_data_length()) + str(answer.get_data()))
                 answers_queue.remove(answer)
+                inputs.append(cur_socket)
                 outputs.remove(cur_socket)
                 break
 
@@ -107,10 +108,10 @@ def create_answer(client_socket, rtype):
     if data_len.isdigit() is not True:
         send_error("ERR DATA LEN ISNT DIGIT", client_socket)
 
-    elif rtype == Answer.LOG_TYPE:
-        send_login_msg(client_socket, data_len)
-
     elif rtype == Answer.ACC_TYPE:
+        send_account_info(client_socket, data_len)
+
+    elif rtype == Answer.LOG_TYPE:
         send_login_msg(client_socket, data_len)
 
     elif rtype == Answer.HND_TYPE:
@@ -140,6 +141,23 @@ def send_login_msg(dest_sock, data_len):
         msg = "Welcome aboard " + username
 
     answers_queue.append(Answer(dest_sock, Answer.LOG_TYPE, len(msg), msg))
+
+    if dest_sock not in outputs:
+        outputs.append(dest_sock)
+    inputs.remove(dest_sock)
+
+
+def send_account_info(dest_sock, username_length):
+    username_length = int(username_length)
+    username = dest_sock.recv(username_length)
+
+    user = User(username)
+    if user.exists():
+        user.by_file()
+        msg = (user.get_info())
+        log("Sent user info of user " + username)
+
+    answers_queue.append(Answer(dest_sock, Answer.ACC_TYPE, len(msg), msg))
 
     if dest_sock not in outputs:
         outputs.append(dest_sock)

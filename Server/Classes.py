@@ -80,5 +80,9 @@ class User:
             self.___owns = user_info[OWNS_POS].split(',')
             self.___awating_confirm = user_info[AWAITING_POS].split(',')
 
+    def get_info(self):
+        with open(USER_PATH + self.___user_name + ".manyak", 'r') as user_file:
+            return user_file.read().replace('\n', '')
+
     def exists(self):
         return os.path.isfile(USER_PATH + self.___user_name + ".manyak")
